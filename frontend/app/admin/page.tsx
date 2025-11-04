@@ -43,14 +43,14 @@ export default function AdminDashboard() {
   };
 
   const handleApprove = async () => {
-    if (!selectedRequest || !adminPassword) {
-      setError('Please enter the admin password');
+    if (!selectedRequest) {
+      setError('No request selected');
       return;
     }
 
     try {
       setApproveLoading(true);
-      await approveAdminRequest(selectedRequest, adminPassword);
+      await approveAdminRequest(selectedRequest);
       setApproveModal(false);
       setAdminPassword('');
       setSelectedRequest(null);
@@ -271,14 +271,7 @@ export default function AdminDashboard() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-background rounded-2xl max-w-md w-full p-8 border border-border shadow-2xl">
             <h2 className="text-2xl font-bold text-foreground mb-2">Approve Admin Request</h2>
-            <p className="text-muted-foreground mb-6">Enter the admin password to verify and approve this request:</p>
-            <input
-              type="password"
-              value={adminPassword}
-              onChange={(e) => setAdminPassword(e.target.value)}
-              placeholder="Admin Password"
-              className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-foreground/20 outline-none mb-6 bg-background text-foreground placeholder:text-muted-foreground"
-            />
+            <p className="text-muted-foreground mb-6">Are you sure you want to approve this admin request? The admin will be able to login with their registered password.</p>
             <div className="flex gap-3">
               <button
                 onClick={() => {

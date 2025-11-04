@@ -32,7 +32,7 @@ interface AuthContextType {
   // SuperAdmin management methods
   getPendingRequests: () => Promise<any>;
   getAllRequests: () => Promise<any>;
-  approveAdminRequest: (requestId: string, adminPassword: string) => Promise<void>;
+  approveAdminRequest: (requestId: string) => Promise<void>;
   rejectAdminRequest: (requestId: string, rejectionReason: string) => Promise<void>;
 
   // Common methods
@@ -174,9 +174,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const handleApproveAdminRequest = async (requestId: string, adminPassword: string) => {
+  const handleApproveAdminRequest = async (requestId: string) => {
     try {
-      await authService.approveAdminRequest(requestId, adminPassword);
+      await authService.approveAdminRequest(requestId);
     } catch (error) {
       throw error;
     }

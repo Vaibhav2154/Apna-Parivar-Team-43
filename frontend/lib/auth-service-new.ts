@@ -186,8 +186,7 @@ export async function getAllRequests(): Promise<{
 }
 
 export async function approveAdminRequest(
-  requestId: string,
-  adminPassword: string
+  requestId: string
 ): Promise<{ message: string; status: string }> {
   try {
     const response = await fetch(`${API_BASE_URL}/api/auth/admin/request/approve`, {
@@ -196,7 +195,6 @@ export async function approveAdminRequest(
       body: JSON.stringify({
         request_id: requestId,
         action: 'approve',
-        admin_password: adminPassword,
       }),
     });
 

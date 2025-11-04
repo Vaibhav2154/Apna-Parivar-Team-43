@@ -244,8 +244,7 @@ class AdminOnboardingService:
     async def approve_request(
         self,
         request_id: str,
-        superadmin_user_id: str,
-        admin_password: str
+        superadmin_user_id: str
     ) -> dict:
         """
         Approve an admin onboarding request
@@ -254,7 +253,6 @@ class AdminOnboardingService:
         Args:
             request_id: The request ID to approve
             superadmin_user_id: The SuperAdmin user ID approving the request
-            admin_password: Admin password (needed to verify they can create their account)
         
         Returns:
             Success response with user and family data
@@ -291,10 +289,13 @@ class AdminOnboardingService:
             if user_data.get("approval_status") != "pending":
                 raise ValueError(f"User is not pending (status: {user_data.get('approval_status')})")
             
-            # Update the user's password hash in case it changed (optional, but good for consistency)
-            password_hash = PasswordHashingService.hash_password(admin_password)
-
-            # Get the hash from the request
+            # Use the password hash created during registration
+            # DO NOT create a new hash - the admin already set their password during registration
+            password_hash = user_data.get("password_hash")
+            if not password_hash:
+                raise ValueError("User password hash not found in registration")
+            
+            # Get the family password hash from the request
             family_password_hash = request.get("family_password_hash")
             
             # Create family record

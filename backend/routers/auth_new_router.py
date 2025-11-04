@@ -574,19 +574,12 @@ async def approve_admin_request(
                 detail="Invalid action"
             )
         
-        if not request.admin_password:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="admin_password required for approval"
-            )
-        
         supabase = get_supabase_client()
         service = AdminOnboardingService(supabase)
         
         result = await service.approve_request(
             request_id=request.request_id,
-            superadmin_user_id=current_user.get("user_id"),
-            admin_password=request.admin_password
+            superadmin_user_id=current_user.get("user_id")
         )
         
         return result
