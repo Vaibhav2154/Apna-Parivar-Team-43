@@ -58,14 +58,14 @@ export default function MemberLoginPage() {
       <div className="w-full max-w-md">
         {/* Logo/Title */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">�</h1>
+          <h1 className="text-4xl font-bold text-foreground mb-2"></h1>
           <h2 className="text-3xl font-bold text-foreground">Apna Parivar</h2>
           <p className="text-muted-foreground mt-2">Family Member Login</p>
         </div>
 
         {/* Login Card */}
                 {/* Login Card */}
-        <div className="bg-card rounded-2xl shadow-2xl p-8">
+        <div className="bg-primary/5 rounded-2xl shadow-2xl p-8 border-primary/10">
           {/* Welcome Message */}
           <div className="mb-6">
             <h3 className="text-2xl font-bold text-card-foreground">Welcome, Family!</h3>

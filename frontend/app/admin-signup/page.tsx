@@ -169,15 +169,15 @@ export default function AdminSignupPage() {
           {/* Content */}
           <div className="p-8">
             {error && (
-              <div className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
-                <p className="text-destructive text-sm font-medium">{error}</p>
+              <div className="mb-6 p-4 bg-primary/5 border border-primary/10 rounded-lg">
+                <p className="text-destructive text-sm font-medium ">{error}</p>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 ">
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-card-foreground mb-1">
+                <label htmlFor="email" className="block text-sm  font-medium text-card-foreground mb-1 ">
                   Email Address
                 </label>
                 <input

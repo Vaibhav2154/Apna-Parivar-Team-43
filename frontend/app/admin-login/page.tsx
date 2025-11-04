@@ -69,20 +69,20 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md">
         {/* Logo/Title */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">👨‍�</h1>
+          <h1 className="text-4xl font-bold text-foreground mb-2"></h1>
           <h2 className="text-3xl font-bold text-foreground">Apna Parivar</h2>
           <p className="text-muted-foreground mt-2">Family Admin Login</p>
         </div>
 
         {/* Info Message */}
         {message && (
-          <div className="mb-6 p-4 bg-primary/10 border border-primary/30 rounded-lg">
+          <div className="mb-6 p-4 bg-primary/5 border border-primary/10 rounded-lg">
             <p className="text-sm text-primary">{message}</p>
           </div>
         )}
 
         {/* Login Card */}
-        <div className="bg-card rounded-2xl shadow-2xl p-8">
+        <div className="bg-card bg-primary/5 rounded-2xl shadow-2xl p-8 border-primary/10">
           {/* Welcome Message */}
           <div className="mb-6">
             <h3 className="text-2xl font-bold text-card-foreground">Welcome Back</h3>
