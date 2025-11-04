@@ -32,49 +32,56 @@ export default function FamiliesPage() {
 
   return (
     <ProtectedRoute requiredRole={['family_admin', 'family_user']}>
-      <div className="min-h-screen bg-background py-12 sm:py-16 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="mb-12 flex justify-between items-start flex-col sm:flex-row gap-6">
-            <div>
-              <h1 className="text-4xl sm:text-5xl font-bold text-foreground">Families</h1>
-              <p className="text-muted-foreground mt-3 text-lg">
-                Your family
-              </p>
+      <div className="min-h-screen bg-background">
+        {/* Header */}
+        <div className="bg-background border-b border-border">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="space-y-2">
+              <h1 className="text-5xl sm:text-6xl font-bold text-foreground">Families</h1>
+              <p className="text-lg text-muted-foreground">Browse and manage your families</p>
             </div>
           </div>
+        </div>
 
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
-              <p className="text-red-400">{error}</p>
+            <div className="mb-8 p-5 bg-destructive/10 border border-destructive/30 rounded-2xl">
+              <p className="text-destructive font-medium text-lg">{error}</p>
             </div>
           )}
 
-          {/* Families List */}
+          {/* Loading State */}
           {isLoading ? (
-            <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-white/20 border-t-white"></div>
+            <div className="flex justify-center py-20">
+              <div className="text-center">
+                <div className="animate-spin text-4xl mb-4">⏳</div>
+                <p className="text-muted-foreground">Loading families...</p>
+              </div>
             </div>
           ) : families.length === 0 ? (
-            <div className="text-center py-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl">
-              <p className="text-muted-foreground text-lg">No families yet. Create your first family!</p>
+            <div className="text-center py-20 bg-white/5 border border-border rounded-2xl">
+              <p className="text-muted-foreground text-lg">No families yet</p>
+              <p className="text-muted-foreground text-sm mt-2">Create your first family to get started</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {families.map((family) => (
-                <div key={family.id} className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 hover:border-white/40 hover:shadow-xl hover:shadow-white/10 transition-all duration-300 hover:scale-105">
-                  <h3 className="text-xl font-semibold text-foreground group-hover:text-white transition-colors">{family.family_name}</h3>
-                  <p className="text-xs text-muted-foreground mt-2">ID: {family.id}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Created: {new Date(family.created_at).toLocaleDateString()}
-                  </p>
-                  <div className="mt-6">
+                <div key={family.id} className="group bg-white/5 border border-border rounded-2xl p-8 hover:border-border/80 hover:bg-white/10 transition-all duration-300 hover:shadow-xl">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-xl font-bold text-foreground">{family.family_name}</h3>
+                      <p className="text-xs text-muted-foreground mt-2">ID: {family.id}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Created: {new Date(family.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
                     <Link
                       href={`/families/${family.id}`}
-                      className="block w-full px-3 py-2 bg-white text-[#010104] text-center font-medium rounded-lg hover:shadow-lg hover:shadow-white/30 transition-all duration-300 text-sm"
+                      className="inline-block w-full px-4 py-3 bg-white text-[#010104] text-center font-semibold rounded-lg hover:shadow-lg hover:shadow-white/30 transition-all duration-300 hover:scale-105"
                     >
-                      View
+                      View Family
                     </Link>
                   </div>
                 </div>

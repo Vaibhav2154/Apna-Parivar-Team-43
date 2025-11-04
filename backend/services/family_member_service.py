@@ -7,6 +7,55 @@ class FamilyMemberService:
     def __init__(self, supabase: Client):
         self.supabase = supabase
     
+    async def create_bulk_family_members(self, family_id: str, members_data: List[dict]) -> dict:
+        """Create multiple family members in bulk (optimized for batch operations)
+        
+        Args:
+            family_id: The family ID to add members to
+            members_data: List of member dictionaries with keys: name, photo_url (optional),
+                         relationships (optional), custom_fields (optional)
+        
+        Returns:
+            Dictionary with success count, failed count, and created member IDs
+        """
+        try:
+            if not members_data:
+                raise ValueError("No members provided for bulk creation")
+            
+            if len(members_data) > 100:
+                raise ValueError("Cannot create more than 100 members in a single request. Please split into multiple requests.")
+            
+            # Validate and prepare data
+            prepared_members = []
+            for idx, member in enumerate(members_data):
+                if not member.get('name') or not str(member.get('name')).strip():
+                    raise ValueError(f"Member {idx + 1}: Name is required")
+                
+                prepared_members.append({
+                    "family_id": family_id,
+                    "name": str(member.get('name', '')).strip(),
+                    "photo_url": member.get('photo_url') or None,
+                    "relationships": member.get('relationships', {}),
+                    "custom_fields": member.get('custom_fields', {})
+                })
+            
+            # Insert all members in bulk
+            response = self.supabase.table("family_members").insert(prepared_members).execute()
+            
+            if not response.data:
+                raise Exception("Failed to create family members")
+            
+            created_members = response.data
+            return {
+                "success": True,
+                "created_count": len(created_members),
+                "failed_count": 0,
+                "member_ids": [m.get("id") for m in created_members],
+                "members": created_members
+            }
+        except Exception as e:
+            raise Exception(f"Error creating bulk family members: {str(e)}")
+    
     async def create_family_member(self, family_id: str, name: str, photo_url: Optional[str] = None, 
                                    relationships: dict = {}, custom_fields: dict = {}) -> dict:
         """Create a new family member"""

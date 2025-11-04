@@ -198,6 +198,29 @@ export async function updateFamilyMember(
   }
 }
 
+// Bulk create family members (optimized for batch operations)
+export async function bulkCreateFamilyMembers(
+  familyId: string,
+  members: Array<Omit<FamilyMember, 'id' | 'family_id' | 'created_at' | 'updated_at'>>
+): Promise<{ success: boolean; created_count: number; failed_count: number; member_ids: string[] }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/family-members/bulk/create?family_id=${familyId}`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ members }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to bulk create family members');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
 // Delete family member
 export async function deleteFamilyMember(familyId: string, memberId: string): Promise<void> {
   try {

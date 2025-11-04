@@ -7,6 +7,8 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { getAllFamilies } from '@/lib/family-service';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
 export default function CoAdminsPage() {
   const params = useParams();
   const familyId = params.id as string;
@@ -36,7 +38,7 @@ export default function CoAdminsPage() {
       setSuccess('');
 
       // Call backend to invite co-admin
-      const response = await fetch('/api/users/invite-co-admin', {
+      const response = await fetch(`${API_BASE_URL}/api/users/invite-co-admin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,13 +51,27 @@ export default function CoAdminsPage() {
         }),
       });
 
+      // Get response text first to handle various response types
+      const responseText = await response.text();
+      
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Failed to invite co-admin');
+        try {
+          const errorData = JSON.parse(responseText);
+          throw new Error(errorData.detail || 'Failed to invite co-admin');
+        } catch (parseError) {
+          throw new Error(`Failed to invite co-admin (Status: ${response.status})`);
+        }
       }
 
-      setSuccess(`Invitation sent to ${email}`);
-      setEmail('');
+      // Parse the success response
+      try {
+        const data = JSON.parse(responseText);
+        setSuccess(`Invitation sent to ${email}`);
+        setEmail('');
+      } catch (parseError) {
+        setSuccess(`Invitation sent to ${email}`);
+        setEmail('');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to invite co-admin');
     } finally {

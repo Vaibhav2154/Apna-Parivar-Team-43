@@ -64,13 +64,7 @@ export default function AdminDashboardPage() {
         admin_name: user?.full_name || 'Admin',
         created_at: family.created_at,
         member_count: members.length,
-        members: members.map(m => ({
-          id: m.id,
-          name: m.name,
-          email: m.relationships?.email || '', // Email might be in relationships
-          relationship: m.relationships?.relationship || m.relationships?.type || 'member',
-          added_at: m.created_at,
-        })),
+        members: members,
       };
 
       setFamilyDetails(familyDetails);
@@ -173,115 +167,142 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="bg-card border-b border-border shadow">
-        <div className="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-card-foreground">👨‍👩‍👧‍👦 Family Dashboard</h1>
-            <p className="text-muted-foreground mt-1">Manage your family and members</p>
+      {/* Header - Landing Page Style */}
+      <div className="bg-background border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+            <div className="space-y-2">
+              <h1 className="text-5xl sm:text-6xl font-bold text-foreground">Family Hub</h1>
+              <p className="text-lg text-muted-foreground">Manage your family members and information</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="px-6 py-3 bg-white text-[#010104] font-semibold rounded-lg hover:shadow-lg hover:shadow-white/30 transition-all duration-300 hover:scale-105 whitespace-nowrap"
+            >
+              Logout
+            </button>
           </div>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:opacity-90 transition"
-          >
-            Logout
-          </button>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
-            <p className="text-destructive">{error}</p>
+          <div className="mb-8 p-5 bg-destructive/10 border border-destructive/30 rounded-2xl">
+            <p className="text-destructive font-medium text-lg">{error}</p>
           </div>
         )}
 
         {/* Approval Status Banner */}
-        <div className="mb-6 p-4 bg-primary/10 border border-primary/30 rounded-lg">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">✅</span>
+        <div className="mb-8 p-6 bg-white/5 border border-border rounded-2xl">
+          <div className="flex items-center gap-4">
             <div>
-              <h3 className="font-semibold text-primary">Account Approved</h3>
-              <p className="text-sm text-primary/80">Your admin account is active and ready to use</p>
+              <h3 className="font-semibold text-foreground text-lg">Account Approved</h3>
+              <p className="text-muted-foreground mt-1">Your admin account is active and ready to use</p>
             </div>
           </div>
         </div>
 
-        {/* Family Info Card */}
+        {/* Family Info Cards */}
         {familyDetails && (
-          <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             {/* Family Name Card */}
-            <div className="bg-card rounded-lg shadow p-6 border border-border">
-              <div className="text-4xl mb-2">👨‍👩‍👧‍👦</div>
-              <p className="text-muted-foreground text-sm font-medium">Family Name</p>
-              <p className="text-2xl font-bold text-card-foreground">{familyDetails.name}</p>
-              <p className="text-xs text-muted-foreground mt-2">Created {new Date(familyDetails.created_at).toLocaleDateString()}</p>
-            </div>
+            <Link
+              href={`/families/${familyDetails.id}`}
+              className="group bg-white/5 border border-border rounded-2xl p-8 hover:border-border/80 hover:bg-white/10 transition-all duration-300 hover:shadow-xl cursor-pointer"
+            >
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Family Name</p>
+              <p className="text-3xl font-bold text-foreground mt-3">{familyDetails.name}</p>
+              <p className="text-xs text-muted-foreground mt-3">Created {new Date(familyDetails.created_at).toLocaleDateString()}</p>
+            </Link>
 
             {/* Admin Info Card */}
-            <div className="bg-card rounded-lg shadow p-6 border border-border">
-              <div className="text-4xl mb-2">👤</div>
-              <p className="text-muted-foreground text-sm font-medium">Admin Info</p>
-              <p className="text-lg font-bold text-card-foreground">{familyDetails.admin_name}</p>
-              <p className="text-xs text-muted-foreground mt-2">{familyDetails.admin_email}</p>
+            <div className="group bg-white/5 border border-border rounded-2xl p-8 hover:border-border/80 hover:bg-white/10 transition-all duration-300 hover:shadow-xl">
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Admin Info</p>
+              <p className="text-xl font-bold text-foreground mt-3">{familyDetails.admin_name}</p>
+              <p className="text-xs text-muted-foreground mt-3 truncate">{familyDetails.admin_email}</p>
             </div>
 
             {/* Members Card */}
-            <div className="bg-card rounded-lg shadow p-6 border border-border">
-              <div className="text-4xl mb-2">👥</div>
-              <p className="text-muted-foreground text-sm font-medium">Total Members</p>
-              <p className="text-2xl font-bold text-card-foreground">{familyDetails.member_count}</p>
-              <button
-                onClick={() => setShowAddMember(true)}
-                className="mt-3 text-sm px-3 py-1 bg-primary text-primary-foreground rounded hover:opacity-90 transition"
-              >
-                + Add Member
-              </button>
+            <div className="group bg-white/5 border border-border rounded-2xl p-8 hover:border-border/80 hover:bg-white/10 transition-all duration-300 hover:shadow-xl">
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Total Members</p>
+              <p className="text-3xl font-bold text-foreground mt-3">{familyDetails.member_count}</p>
+              <div className="mt-4 flex gap-2 flex-wrap">
+                <button
+                  onClick={() => setShowAddMember(true)}
+                  className="text-sm px-4 py-2 bg-white text-[#010104] font-semibold rounded-lg hover:shadow-lg hover:shadow-white/20 transition-all duration-300 hover:scale-105"
+                >
+                  + Add
+                </button>
+                <Link
+                  href={`/families/${familyDetails.id}/members/bulk-import`}
+                  className="text-sm px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-blue-600/20 transition-all duration-300 hover:scale-105"
+                >
+                  Bulk Import
+                </Link>
+              </div>
             </div>
           </div>
         )}
 
         {/* Members Section */}
-        <div className="bg-card rounded-lg shadow border border-border">
-          <div className="p-6 border-b border-border flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-card-foreground">Family Members</h2>
-            <button
-              onClick={() => setShowAddMember(true)}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition"
-            >
-              + Add Member
-            </button>
+        <div className="bg-background rounded-2xl border border-border overflow-hidden">
+          <div className="px-8 py-6 border-b border-border bg-white/2 flex justify-between items-center gap-3 flex-wrap">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Family Members</h2>
+              <p className="text-muted-foreground mt-1">Manage your family members</p>
+            </div>
+            <div className="flex gap-3">
+              <Link
+                href={`/families/${familyDetails?.id}/members/bulk-import`}
+                className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-blue-600/30 transition-all duration-300 hover:scale-105"
+              >
+                📥 Bulk Import
+              </Link>
+              <button
+                onClick={() => setShowAddMember(true)}
+                className="px-6 py-3 bg-white text-[#010104] font-semibold rounded-lg hover:shadow-lg hover:shadow-white/30 transition-all duration-300 hover:scale-105"
+              >
+                + Add Member
+              </button>
+            </div>
           </div>
 
           {/* Members List */}
-          <div className="p-6">
+          <div className="px-8 py-6">
             {familyDetails?.members && familyDetails.members.length > 0 ? (
               <div className="space-y-4">
                 {familyDetails.members.map((member) => (
-                  <div key={member.id} className="flex justify-between items-center p-4 bg-background rounded-lg hover:bg-background/80 transition border border-border">
-                    <div>
-                      <p className="font-semibold text-card-foreground">{member.name}</p>
-                      <p className="text-sm text-muted-foreground">{member.email}</p>
-                      <p className="text-xs text-muted-foreground/70 mt-1">Relationship: {member.relationship}</p>
+                  <div key={member.id} className="flex items-center justify-between p-6 bg-white/5 rounded-xl hover:bg-white/10 transition-colors border border-border/50">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-foreground text-lg">{member.name}</p>
+                        <p className="text-sm text-muted-foreground truncate">{member.email || 'No email'}</p>
+                      </div>
                     </div>
-                    <button
-                      onClick={() => handleRemoveMember(member.id)}
-                      className="px-3 py-1 bg-destructive/10 text-destructive rounded hover:opacity-90 transition text-sm"
-                    >
-                      Remove
-                    </button>
+                    <div className="flex items-center gap-4">
+                      <span className="text-xs bg-foreground/10 text-foreground px-3 py-1 rounded-full font-medium">
+                        {(member.relationships && typeof member.relationships === 'object' && 'relationship' in member.relationships ? member.relationships.relationship : 'member') || 'Member'}
+                      </span>
+                      <button
+                        onClick={() => handleRemoveMember(member.id)}
+                        className="px-4 py-2 text-sm font-medium text-destructive hover:text-destructive/80 transition"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">No members added yet</p>
+              <div className="text-center py-16">
+                <p className="text-muted-foreground text-lg">No members added yet</p>
+                <p className="text-muted-foreground text-sm mt-2">Add your first family member to get started</p>
                 <button
                   onClick={() => setShowAddMember(true)}
-                  className="mt-3 text-primary font-semibold hover:opacity-70"
+                  className="mt-6 text-foreground font-semibold hover:opacity-70 transition text-sm px-4 py-2 bg-white/10 rounded-lg border border-border"
                 >
-                  Add your first member
+                  Add First Member
                 </button>
               </div>
             )}
@@ -290,14 +311,15 @@ export default function AdminDashboardPage() {
 
         {/* Add Member Modal */}
         {showAddMember && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-card rounded-lg shadow-xl max-w-md w-full p-6 border border-border">
-              <h2 className="text-2xl font-bold text-card-foreground mb-4">Add Family Member</h2>
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+            <div className="bg-background rounded-2xl shadow-2xl max-w-md w-full p-8 border border-border">
+              <h2 className="text-2xl font-bold text-foreground mb-2">Add Family Member</h2>
+              <p className="text-muted-foreground mb-6">Add a new member to your family</p>
 
-              <form onSubmit={handleAddMember} className="space-y-4">
+              <form onSubmit={handleAddMember} className="space-y-5">
                 {/* Name */}
                 <div>
-                  <label className="block text-sm font-medium text-card-foreground mb-1">
+                  <label className="block text-sm font-semibold text-foreground mb-2">
                     Member Name
                   </label>
                   <input
@@ -305,35 +327,35 @@ export default function AdminDashboardPage() {
                     value={newMember.name}
                     onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
                     placeholder="John Doe"
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground/20 bg-background text-foreground placeholder:text-muted-foreground transition"
                     disabled={addMemberLoading}
                   />
                 </div>
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium text-card-foreground mb-1">
-                    Email
+                  <label className="block text-sm font-semibold text-foreground mb-2">
+                    Email (Optional)
                   </label>
                   <input
                     type="email"
                     value={newMember.email}
                     onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
                     placeholder="john@family.com"
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground/20 bg-background text-foreground placeholder:text-muted-foreground transition"
                     disabled={addMemberLoading}
                   />
                 </div>
 
                 {/* Relationship */}
                 <div>
-                  <label className="block text-sm font-medium text-card-foreground mb-1">
+                  <label className="block text-sm font-semibold text-foreground mb-2">
                     Relationship
                   </label>
                   <select
                     value={newMember.relationship}
                     onChange={(e) => setNewMember({ ...newMember, relationship: e.target.value })}
-                    className="w-full px-4 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground/20 bg-background text-foreground transition"
                     disabled={addMemberLoading}
                   >
                     <option value="">Select relationship</option>
@@ -342,24 +364,29 @@ export default function AdminDashboardPage() {
                     <option value="parent">Parent</option>
                     <option value="sibling">Sibling</option>
                     <option value="grandparent">Grandparent</option>
+                    <option value="grandchild">Grandchild</option>
+                    <option value="uncle">Uncle</option>
+                    <option value="aunt">Aunt</option>
+                    <option value="cousin">Cousin</option>
+                    <option value="in-law">In-law</option>
                     <option value="other">Other</option>
                   </select>
                 </div>
 
                 {/* Buttons */}
-                <div className="flex gap-3 mt-6">
+                <div className="flex gap-3 mt-8">
                   <button
                     type="button"
                     onClick={() => setShowAddMember(false)}
                     disabled={addMemberLoading}
-                    className="flex-1 px-4 py-2 border border-border text-card-foreground rounded-lg hover:bg-background/50 transition"
+                    className="flex-1 px-4 py-3 border border-border text-foreground font-semibold rounded-lg hover:bg-white/5 transition"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={addMemberLoading}
-                    className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 disabled:opacity-50 transition"
+                    className="flex-1 px-4 py-3 bg-white text-[#010104] font-semibold rounded-lg hover:shadow-lg hover:shadow-white/30 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
                   >
                     {addMemberLoading ? 'Adding...' : 'Add Member'}
                   </button>

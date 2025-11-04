@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel, EmailStr
 
 # User Schemas
@@ -60,6 +60,19 @@ class FamilyMemberResponse(FamilyMemberBase):
     class Config:
         from_attributes = True
 
+# Bulk Family Member Operations
+class BulkFamilyMemberCreate(BaseModel):
+    """Schema for creating multiple family members at once"""
+    members: List[FamilyMemberCreate]
+
+class BulkFamilyMemberResponse(BaseModel):
+    """Response for bulk family member creation"""
+    success: bool
+    created_count: int
+    failed_count: int
+    member_ids: List[str]
+    message: Optional[str] = None
+    
 # Auth Schemas
 class LoginRequest(BaseModel):
     email: str
@@ -108,3 +121,16 @@ class AdminApprovalRequest(BaseModel):
     action: str  # approve or reject
     admin_password: Optional[str] = None  # Required for approve
     rejection_reason: Optional[str] = None  # Required for reject
+
+# Co-Admin Invite
+class CoAdminInviteRequest(BaseModel):
+    """Request to invite a co-admin to a family"""
+    email: EmailStr
+    family_id: str
+    role: str = "family_co_admin"
+
+class CoAdminInviteResponse(BaseModel):
+    """Response for co-admin invite"""
+    success: bool
+    message: str
+    invitation_id: Optional[str] = None

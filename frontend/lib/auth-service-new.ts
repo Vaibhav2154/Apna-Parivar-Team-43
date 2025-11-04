@@ -5,6 +5,7 @@ import {
   AdminOnboardingRequest,
   AdminOnboardingResponse,
   PendingRequestsResponse,
+  PendingAdminRequest,
   AdminApprovalRequest,
   FamilyMemberLoginRequest
 } from './types';
@@ -152,6 +153,30 @@ export async function getPendingRequests(): Promise<PendingRequestsResponse> {
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.detail || 'Failed to fetch pending requests');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getAllRequests(): Promise<{
+  total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+  requests: PendingAdminRequest[];
+}> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/admin/requests/all`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to fetch all requests');
     }
 
     return await response.json();

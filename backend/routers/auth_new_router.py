@@ -477,6 +477,65 @@ async def get_pending_requests(current_user: dict = Depends(get_auth_user)):
         )
 
 
+@router.get("/admin/requests/all")
+async def get_all_requests(current_user: dict = Depends(get_auth_user)):
+    """
+    Get all admin onboarding requests (pending, approved, rejected) (SuperAdmin only)
+    
+    Response:
+        {
+            "total": 5,
+            "pending": 2,
+            "approved": 2,
+            "rejected": 1,
+            "requests": [
+                {
+                    "id": "request_id",
+                    "email": "admin@family.com",
+                    "full_name": "Admin Name",
+                    "family_name": "unique_family_name",
+                    "status": "pending|approved|rejected",
+                    "requested_at": "timestamp"
+                }
+            ]
+        }
+    """
+    try:
+        # Check if user is SuperAdmin
+        if current_user.get("role") != "super_admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only SuperAdmin can access this endpoint"
+            )
+        
+        supabase = get_supabase_client()
+        service = AdminOnboardingService(supabase)
+        
+        all_requests = await service.get_all_requests()
+        
+        # Calculate stats
+        total = len(all_requests)
+        pending = sum(1 for r in all_requests if r.get("status") == "pending")
+        approved = sum(1 for r in all_requests if r.get("status") == "approved")
+        rejected = sum(1 for r in all_requests if r.get("status") == "rejected")
+        
+        return {
+            "total": total,
+            "pending": pending,
+            "approved": approved,
+            "rejected": rejected,
+            "requests": all_requests
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error fetching requests: {str(e)}"
+        )
+
+
 @router.post("/admin/request/approve")
 async def approve_admin_request(
     request: AdminApprovalRequest,

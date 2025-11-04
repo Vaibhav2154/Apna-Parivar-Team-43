@@ -196,6 +196,34 @@ class AdminOnboardingService:
         except Exception as e:
             raise Exception(f"Error fetching pending requests: {str(e)}")
     
+    async def get_all_requests(self) -> List[dict]:
+        """
+        Get all admin onboarding requests (pending, approved, rejected)
+        
+        Returns:
+            List of all requests
+        """
+        try:
+            response = self.supabase.table("admin_onboarding_requests").select("*").order("requested_at", desc=True).execute()
+            
+            # Remove sensitive fields like encrypted passwords before returning
+            requests = []
+            for req in response.data or []:
+                safe_req = {
+                    "id": req.get("id"),
+                    "email": req.get("email"),
+                    "full_name": req.get("full_name"),
+                    "family_name": req.get("family_name"),
+                    "status": req.get("status"),
+                    "requested_at": req.get("requested_at")
+                }
+                requests.append(safe_req)
+            
+            return requests
+        
+        except Exception as e:
+            raise Exception(f"Error fetching all requests: {str(e)}")
+    
     async def get_request_by_id(self, request_id: str) -> Optional[dict]:
         """
         Get a specific onboarding request by ID
@@ -297,6 +325,22 @@ class AdminOnboardingService:
             if not user_response.data:
                 raise Exception("Failed to update user approval status")
             
+            # Create the admin as a family member
+            # This ensures the admin is also counted as a member of their family
+            admin_member_data = {
+                "family_id": family_id,
+                "name": full_name,
+                "photo_url": None,
+                "relationships": {"role": "family_admin"},
+                "custom_fields": {"email": email, "user_id": user_id}
+            }
+            
+            member_response = self.supabase.table("family_members").insert(admin_member_data).execute()
+            
+            if not member_response.data:
+                # Log but don't fail - still allow approval even if member creation fails
+                print(f"Warning: Failed to create family member record for admin {email}")
+            
             # Update the request status to approved
             # Note: If superadmin_user_id is "superadmin" (not a UUID), set reviewed_by to NULL
             # since superadmin doesn't exist in the users table
@@ -321,7 +365,8 @@ class AdminOnboardingService:
                 "user_id": user_id,
                 "family_id": family_id,
                 "email": email,
-                "family_name": family_name
+                "family_name": family_name,
+                "admin_member_id": member_response.data[0].get("id") if member_response.data else None
             }
         
         except Exception as e:

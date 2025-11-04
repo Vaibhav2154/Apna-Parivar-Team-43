@@ -1,7 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import List, Optional
 from core.database import get_supabase_client
-from schemas.user import FamilyMemberCreate, FamilyMemberResponse, FamilyMemberUpdate
+from schemas.user import (
+    FamilyMemberCreate, 
+    FamilyMemberResponse, 
+    FamilyMemberUpdate,
+    BulkFamilyMemberCreate,
+    BulkFamilyMemberResponse
+)
 from services.family_member_service import FamilyMemberService
 
 router = APIRouter(prefix="/api/family-members", tags=["family-members"])
@@ -10,6 +16,47 @@ async def get_family_member_service():
     """Dependency to get family member service"""
     supabase = get_supabase_client()
     return FamilyMemberService(supabase)
+
+@router.post("/bulk/create", response_model=BulkFamilyMemberResponse, status_code=status.HTTP_201_CREATED)
+async def bulk_create_family_members(
+    family_id: str,
+    request: BulkFamilyMemberCreate,
+    service: FamilyMemberService = Depends(get_family_member_service)
+):
+    """Create multiple family members in bulk (optimized for batch operations)
+    
+    This endpoint allows creating 20-30+ family members quickly with custom fields.
+    All members can be added in a single request for maximum efficiency.
+    """
+    try:
+        if not request.members:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="At least one member is required"
+            )
+        
+        # Convert to dict for service
+        members_data = [m.model_dump() for m in request.members]
+        
+        result = await service.create_bulk_family_members(family_id, members_data)
+        
+        return BulkFamilyMemberResponse(
+            success=result.get("success", True),
+            created_count=result.get("created_count", 0),
+            failed_count=result.get("failed_count", 0),
+            member_ids=result.get("member_ids", []),
+            message=f"Successfully created {result.get('created_count', 0)} family members"
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Bulk creation failed: {str(e)}"
+        )
 
 @router.post("/", response_model=FamilyMemberResponse, status_code=status.HTTP_201_CREATED)
 async def create_family_member(
