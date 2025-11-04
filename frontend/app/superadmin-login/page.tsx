@@ -31,114 +31,110 @@ export default function SuperAdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
-        {/* Logo/Title */}
-        <div className="text-center mb-8 rounded-lg py-6 px-4 superadmin-title-bg">
-          <h2 className="text-3xl font-bold text-foreground superadmin-title-text">Apna Parivar</h2>
-          <p className="text-muted-foreground mt-2 superadmin-subtitle-text">SuperAdmin Login</p>
-        </div>
-
-        {/* Login Card */}
-        <div className="bg-card rounded-2xl shadow-2xl p-8">
-          {/* Welcome Message */}
-          <div className="mb-6">
-            <h3 className="text-2xl font-bold text-card-foreground">System Management</h3>
-            <p className="text-muted-foreground text-sm mt-1">
-              Manage admin registrations and approvals
-            </p>
+        <div className="bg-card dark:bg-[#000000] rounded-lg shadow-xl dark:shadow-2xl overflow-hidden dark:border dark:border-gray-800">
+          {/* Header */}
+          <div className="bg-primary px-6 py-8">
+            <h1 className="text-3xl font-bold text-primary-foreground">Apna Parivar</h1>
+            <p className="text-primary-foreground/80 mt-2">SuperAdmin Login</p>
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
-              <p className="text-sm text-destructive">{error}</p>
-            </div>
-          )}
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Username Field */}
-            <div>
-              <label htmlFor="username" className="block text-sm font-semibold text-card-foreground mb-2">
-                Username
-              </label>
-              <input
-                type="text"
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter username"
-                className="w-full px-4 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
-                disabled={isLoading}
-              />
+          {/* Content */}
+          <div className="p-8">
+            {/* Welcome Message */}
+            <div className="mb-6">
+              <h3 className="text-2xl font-bold text-card-foreground">System Management</h3>
+              <p className="text-muted-foreground text-sm mt-1">
+                Manage admin registrations and approvals
+              </p>
             </div>
 
-            {/* Password Field */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-card-foreground mb-2">
-                Password
-              </label>
-              <div className="relative">
+            {/* Error Message */}
+            {error && (
+              <div className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
+                <p className="text-sm text-destructive">{error}</p>
+              </div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Username Field */}
+              <div>
+                <label htmlFor="username" className="block text-sm font-semibold text-card-foreground mb-2">
+                  Username
+                </label>
                 <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-4 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                  type="text"
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter username"
+                  className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition bg-background text-foreground"
                   disabled={isLoading}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  disabled={isLoading}
-                >
-                  <span className="dark:inline-block emoji-hide">{showPassword ? '👁️' : '👁️‍🗨️'}</span>
-                </button>
+              </div>
+
+              {/* Password Field */}
+              <div>
+                <label htmlFor="password" className="block text-sm font-semibold text-card-foreground mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition bg-background text-foreground"
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    disabled={isLoading}
+                  >
+                    <span className="dark:inline-block emoji-hide">{showPassword ? '👁️' : '👁️‍🗨️'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-primary text-primary-foreground font-semibold py-2.5 rounded-lg hover:opacity-90 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+              >
+                {isLoading ? 'Logging in...' : 'Login'}
+              </button>
+            </form>
+
+            {/* Additional Links */}
+            <div className="mt-6 pt-6 border-t border-border">
+              <div className="text-center text-sm text-muted-foreground">
+                <p className="mb-2">
+                  Are you a Family Admin?{' '}
+                  <Link href="/admin-login" className="text-foreground font-medium hover:opacity-70">
+                    Login here
+                  </Link>
+                </p>
+                <p className="mb-6">
+                  Are you a Family Member?{' '}
+                  <Link href="/member-login" className="text-foreground font-medium hover:opacity-70">
+                    Login here
+                  </Link>
+                </p>
+              </div>
+
+              <div className="text-center">
+                <Link href="/" className="text-foreground hover:opacity-70 font-medium text-sm">
+                  ← Back to Home
+                </Link>
               </div>
             </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full mt-6 px-4 py-2.5 bg-primary text-primary-foreground font-semibold rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
-            >
-              {isLoading ? 'Logging in...' : 'Login'}
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="my-6 flex items-center">
-            <div className="flex-1 border-t border-border"></div>
-            <span className="px-2 text-sm text-muted-foreground">or</span>
-            <div className="flex-1 border-t border-border"></div>
           </div>
-
-          {/* Additional Info */}
-          <div className="space-y-3 text-sm text-muted-foreground">
-            <p>
-              Are you a Family Admin?{' '}
-              <Link href="/admin-login" className="text-foreground font-semibold hover:opacity-70">
-                Login here
-              </Link>
-            </p>
-            <p>
-              Are you a Family Member?{' '}
-              <Link href="/member-login" className="text-foreground font-semibold hover:opacity-70">
-                Login here
-              </Link>
-            </p>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center mt-6">
-          <Link href="/" className="text-foreground hover:opacity-70 font-medium text-sm">
-            ← Back to Home
-          </Link>
         </div>
       </div>
     </div>
