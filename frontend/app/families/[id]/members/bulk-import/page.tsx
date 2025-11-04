@@ -11,7 +11,6 @@ import Link from 'next/link';
 const PREDEFINED_CUSTOM_FIELDS = [
   'Date of Birth',
   'Phone Number',
-  'Email Address',
   'Occupation',
   'Education',
   'Blood Group',
@@ -126,6 +125,9 @@ export default function BulkImportPage() {
         } else if (header.startsWith('Relationship:')) {
           const relType = header.split(':')[1].trim();
           memberObj.relationships[relType] = value;
+        } else if (header === 'Email Address' || header === 'Email') {
+          // Store email in relationships for authentication
+          memberObj.relationships['email'] = value;
         } else if (PREDEFINED_CUSTOM_FIELDS.includes(header)) {
           memberObj.customFields[header] = value;
         }
@@ -231,6 +233,7 @@ export default function BulkImportPage() {
       'Relationship: father',
       'Relationship: mother',
       'Relationship: spouse',
+      'Relationship: email',
       ...PREDEFINED_CUSTOM_FIELDS
     ];
     
@@ -360,6 +363,7 @@ export default function BulkImportPage() {
                       <th className="text-left py-3 px-4 font-semibold text-foreground">Photo URL</th>
                       <th className="text-left py-3 px-4 font-semibold text-foreground">Father</th>
                       <th className="text-left py-3 px-4 font-semibold text-foreground">Mother</th>
+                      <th className="text-left py-3 px-4 font-semibold text-foreground">Email</th>
                       <th className="text-center py-3 px-4 font-semibold text-foreground">Action</th>
                     </tr>
                   </thead>
@@ -400,6 +404,15 @@ export default function BulkImportPage() {
                             value={member.relationships.mother || ''}
                             onChange={(e) => updateRelationship(member.id, 'mother', e.target.value)}
                             placeholder="Mother's name"
+                            className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-white/50 text-xs"
+                          />
+                        </td>
+                        <td className="py-3 px-4">
+                          <input
+                            type="email"
+                            value={member.relationships.email || ''}
+                            onChange={(e) => updateRelationship(member.id, 'email', e.target.value)}
+                            placeholder="email@example.com"
                             className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-white/50 text-xs"
                           />
                         </td>
